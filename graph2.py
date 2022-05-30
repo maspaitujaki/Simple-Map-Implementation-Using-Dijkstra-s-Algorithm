@@ -1,4 +1,4 @@
-from importlib.resources import path
+from turtle import distance
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -42,6 +42,25 @@ def drawDictGraph(graph):
     nx.draw_networkx_edge_labels(nxG,pos,edge_labels=weight)
     plt.show()
 
+def shortestDistanceNode(distances, visited):
+    # create a default value for shortest
+	shortest = None
+	
+  	# for each node in the distances object
+	for key, value in distances.items():
+    	# if no node has been assigned to shortest yet
+  		# or if the current node's distance is smaller than the current shortest
+		currentIsShortest =	shortest is None or distances[key] < distances[shortest]
+        	
+	  	# and if the current node is in the unvisited set
+		if currentIsShortest and not key in visited:
+            # update shortest to be the current node
+			shortest = key
+	return shortest
+
 G1 = Graph("tc1.txt")
 print(G1.graph)
-drawDictGraph(G1)
+# drawDictGraph(G1)
+print(G1.graph[0])
+print(shortestDistanceNode(G1.graph[0], {}))
+
