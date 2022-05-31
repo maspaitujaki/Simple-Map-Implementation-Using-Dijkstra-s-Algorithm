@@ -78,7 +78,7 @@ class Graph:
 
         shortestPath = [endNode]
         parent = parents[endNode]
-        print(parents)
+        # print(parents)
         while (parent != startNode):
             shortestPath.append(parent)
             parent = parents[parent]
@@ -88,7 +88,7 @@ class Graph:
         # Akhiri record waktu
         b = datetime.datetime.now()
         delta = b - a
-        print(delta)
+        # print(delta)
         result = {
             "distance": distances[endNode],
             "path": shortestPath,
@@ -133,13 +133,13 @@ def drawDictGraph(graph):
     nx.draw_networkx_edge_labels(nxG,pos,edge_labels=weight)
     plt.show()
 
-G1 = Graph('tc1.txt')
-# res = G1.findShortestPath(8,0)
-# res = G1.findShortestPath(8,1)
-# res = G1.findShortestPath(8,2)
-# res = G1.findShortestPath(8,3)
-res = G1.findShortestPath(8,4)
-# res = G1.findShortestPath(8,5)
-# res = G1.findShortestPath(8,6)
-# res = G1.findShortestPath(8,7)
-print(res)
+# G1 = Graph('tc1.txt')
+# # res = G1.findShortestPath(8,0)
+# # res = G1.findShortestPath(8,1)
+# # res = G1.findShortestPath(8,2)
+# # res = G1.findShortestPath(8,3)
+# res = G1.findShortestPath(8,4)
+# # res = G1.findShortestPath(8,5)
+# # res = G1.findShortestPath(8,6)
+# # res = G1.findShortestPath(8,7)
+# print(res)

@@ -197,10 +197,10 @@ class PrettyWidget(QWidget):
 
         for i in range(len(path)-1):
             nxG.edges[str(path[i]), str(path[i+1])]['color'] = "red"
-            print(nxG.nodes[str(path[i])])
+            # print(nxG.nodes[str(path[i])])
 
         edges = nxG.edges()
-        print(edges)
+        # print(edges)
         colors = [nxG[u][v]['color'] for u,v in edges]
 
         # nx.draw(nxG,pos=self.pos, edge_color=colors, with_labels=True)
