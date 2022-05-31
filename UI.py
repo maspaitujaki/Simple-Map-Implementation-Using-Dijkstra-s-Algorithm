@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 import networkx as nx
 import os
 
-from graph2 import Graph
+from Graph import Graph
 
 class PrettyWidget(QWidget):
 
@@ -48,18 +48,18 @@ class PrettyWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        self.fileNameLabel = QLabel('FileNameLabel')
+        self.fileNameLabel = QLabel('Choose file')
         self.fileNameLabel.setObjectName('FileNameLabel')
         layout.addWidget(self.fileNameLabel)
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
 
-        browseButton = QPushButton('browse')
-        browseButton.setObjectName('browse')
-        layout.addWidget(browseButton)
+        self.browseButton = QPushButton('browse')
+        self.browseButton.setObjectName('browse')
+        layout.addWidget(self.browseButton)
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
-        browseButton.clicked.connect(self.browseFile)
+        self.browseButton.clicked.connect(self.browseFile)
 
         simpulAsalLabel = QLabel('Simpul Asal')
         simpulAsalLabel.setObjectName('SimpulAsal')
@@ -93,6 +93,13 @@ class PrettyWidget(QWidget):
         self.verticalGroupBox.setLayout(layout)
         startButton.clicked.connect(self.startDikjstra)
 
+        clearButton = QPushButton('clear')
+        clearButton.setObjectName('clear')
+        layout.addWidget(clearButton)
+        layout.setSpacing(10)
+        self.verticalGroupBox.setLayout(layout)
+        clearButton.clicked.connect(self.clearAction)
+
         self.banyakIterasiLabel = QLabel('')
         self.banyakIterasiLabel.setObjectName('banyakIterasiLabel')
         layout.addWidget(self.banyakIterasiLabel)
@@ -105,11 +112,29 @@ class PrettyWidget(QWidget):
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
 
+        self.panjangLintasanLabel = QLabel('')
+        self.panjangLintasanLabel.setObjectName('panjangLintasanLabel')
+        layout.addWidget(self.panjangLintasanLabel)
+        layout.setSpacing(10)
+        self.verticalGroupBox.setLayout(layout)
+
         self.waktuLabel = QLabel('')
         self.waktuLabel.setObjectName('waktuLabel')
         layout.addWidget(self.waktuLabel)
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
+
+    def clearAction(self):
+        self.SimpulAsalComboBox.clear()
+        self.SimpulTujuanComboBox.clear()
+        self.fileNameLabel.setText("Choose File")
+        self.panjangLintasanLabel.setText("")
+        self.waktuLabel.setText("")
+        self.banyakIterasiLabel.setText("")
+        self.lintasanLabel.setText("")
+        self.figure.clf()
+        self.browseButton.setEnabled(True)
+        
 
     def browseFile(self):
         fname = QFileDialog.getOpenFileName(self, 'Open file', 'D:\\', 'Text files (*.txt)')
@@ -117,13 +142,17 @@ class PrettyWidget(QWidget):
         
         if os.path.exists(fname[0]):
             self.graph = Graph(fname[0])
+            self.browseButton.setEnabled(False)
             self.fig()
 
     def simpulAsalChanged(self):
         self.SimpulTujuanComboBox.clear()
         strArr = list(map(lambda x: str(x), self.graph.graph.keys()))
-        strArr.remove(self.SimpulAsalComboBox.currentText())
-        self.SimpulTujuanComboBox.addItems(strArr)
+        try:
+            strArr.remove(self.SimpulAsalComboBox.currentText())
+            self.SimpulTujuanComboBox.addItems(strArr)
+        except:
+            pass
 
     
     def fig(self):
@@ -131,7 +160,7 @@ class PrettyWidget(QWidget):
         self.figure.clf()
         nxG = nx.DiGraph()
         G = self.graph.graph
-        V = [str(i) for i in range(len(G))]
+        V = [str(key) for key, value in G.items()]
         E = []
         for key, value in G.items():
             for key2, value2 in value.items():
@@ -139,18 +168,56 @@ class PrettyWidget(QWidget):
         nxG.add_nodes_from(V)
         nxG.add_weighted_edges_from(E)
         weight = nx.get_edge_attributes(nxG,'weight')
-        pos = nx.spring_layout(nxG)
-        nx.draw(nxG,pos=pos, with_labels=True)
-        nx.draw_networkx_edge_labels(nxG,pos,edge_labels=weight)
+        self.pos = nx.spring_layout(nxG)
+        # nx.draw(nxG,pos=self.pos, with_labels=True)
+        nx.draw_networkx_nodes(nxG, self.pos)
+        nx.draw_networkx_labels(nxG, self.pos)
+        nx.draw_networkx_edges(nxG, self.pos,connectionstyle='arc3, rad = 0.1')
+        nx.draw_networkx_edge_labels(nxG,self.pos,edge_labels=weight,label_pos=0.3)
         self.canvas.draw_idle()
 
         self.SimpulAsalComboBox.addItems(list(map(lambda x: str(x), self.graph.graph.keys())))
+
+    def figPath(self, path):
+        self.figure.clf()
+        pathDict = {}
+        for i in range(len(path)-1):
+            pathDict[path[i]] = path[i+1]
+        nxG = nx.DiGraph()
+        G = self.graph.graph
+        V = [str(key) for key, value in G.items()]
+        E = []
+        for key, value in G.items():
+            for key2, value2 in value.items():
+                # if key in pathDict.keys() and value2 == pathDict[key]:
+                E.append((str(key),str(key2), value2))
+        nxG.add_nodes_from(V)
+        nxG.add_weighted_edges_from(E, color='black')
+        weight = nx.get_edge_attributes(nxG,'weight')
+
+        for i in range(len(path)-1):
+            nxG.edges[str(path[i]), str(path[i+1])]['color'] = "red"
+            print(nxG.nodes[str(path[i])])
+
+        edges = nxG.edges()
+        print(edges)
+        colors = [nxG[u][v]['color'] for u,v in edges]
+
+        # nx.draw(nxG,pos=self.pos, edge_color=colors, with_labels=True)
+        nx.draw_networkx_nodes(nxG, self.pos)
+        nx.draw_networkx_nodes(nxG, self.pos, nodelist=list(map(lambda x: str(x), path)), node_color='red')
+        nx.draw_networkx_labels(nxG, self.pos)
+        nx.draw_networkx_edges(nxG, self.pos,connectionstyle='arc3, rad = 0.1', edge_color=colors)
+        nx.draw_networkx_edge_labels(nxG,self.pos,edge_labels=weight,label_pos=0.3)
+        self.canvas.draw_idle()
 
     def startDikjstra(self):
         simpulAsal = int(self.SimpulAsalComboBox.currentText())
         simpulTujuan = int(self.SimpulTujuanComboBox.currentText())
 
         result = self.graph.findShortestPath(simpulAsal, simpulTujuan)
+
+        self.figPath(result.get('path'))
         
         lintasan = ''
         for i in range(len(result.get('path'))):
@@ -159,8 +226,8 @@ class PrettyWidget(QWidget):
                 lintasan += " -> "
         self.lintasanLabel.setText('Lintasan: ' + lintasan)
         self.banyakIterasiLabel.setText('Banyak Iterasi: ' + str(result.get('iterasi')))
-        self.waktuLabel.setText("Waktu eksekusi: " + str(result.get('waktu') + " ms"))
-
+        self.waktuLabel.setText("Waktu eksekusi: " + str(result.get('waktu')) + " ms")
+        self.panjangLintasanLabel.setText("Panjang lintasan: " + str(result.get('distance')))
 
 
     def center(self):
