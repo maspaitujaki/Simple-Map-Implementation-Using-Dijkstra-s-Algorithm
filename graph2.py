@@ -1,4 +1,3 @@
-from turtle import distance
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -58,9 +57,73 @@ def shortestDistanceNode(distances, visited):
 			shortest = key
 	return shortest
 
-G1 = Graph("tc1.txt")
-print(G1.graph)
-# drawDictGraph(G1)
-print(G1.graph[0])
-print(shortestDistanceNode(G1.graph[0], {}))
+def findShortestPath(graph, startNode, endNode):
+    # Menyimpan jarak Node dari startNode, dimulai dari endNode dengan jarak Infinity
+    # dan node yang bertetangga dengan startNode
+    distances = {}
+    distances[endNode] = float('inf')
+    for key, value in graph.graph[startNode].items():
+        distances[key] = value
 
+    # track parent dari node untuk menemukan path di akhir
+    parents = { endNode : None }
+    for key, value in graph.graph[startNode].items():
+        parents[key] = startNode
+    
+    # simpan node yang telah divisit
+    visited = []
+
+    # menemukan node terdekat
+    node = shortestDistanceNode(distances,visited)
+
+    # Untuk node tersebut
+    while(node):
+        distance = distances[node]
+        children = graph.graph[node]
+
+        # tiap anak node
+        for key,value in children.items():
+            # Pastikan bukan start node
+            if key == startNode: continue
+            else:
+                # Jarak dari start node ke child node
+                newDistance = distance + value
+                # Simpan newDistance ke dalam distances apabila
+                # child tidak ada di distances atau newDistance
+                # lebih pendek dari yang udh disimpan
+                if (not key in distances.keys()) or distances[key] > newDistance:
+                    distances[key] = newDistance
+                    parents[key] = node
+        
+        # Tambahkan node ke dalam visited
+        visited.append(node)
+        # Pilih node dengan distances minimum
+        node = shortestDistanceNode(distances, visited)
+    
+
+    shortestPath = [endNode]
+    parent = parents[endNode]
+    print(parents)
+    while (parent):
+        shortestPath.append(parent)
+        parent = parents[parent]
+    shortestPath.append(startNode)
+    shortestPath.reverse()
+
+    result = {
+        "distance": distances[endNode],
+        "path": shortestPath
+    }
+
+    return result
+    
+    
+
+        
+G1 = Graph("tc1.txt")
+# print(G1.graph)
+# drawDictGraph(G1)
+# print(G1.graph[0])
+# print(shortestDistanceNode(G1.graph[0], {}))
+res = findShortestPath(G1, 0, 8)
+print(res)
