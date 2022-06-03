@@ -1,7 +1,7 @@
+import time
 import networkx as nx
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime
 
 class Graph:
     def __init__(self,pathName):
@@ -27,7 +27,7 @@ class Graph:
     
     def findShortestPath(self, startNode, endNode):
         # Mulai record Waktu
-        a = datetime.datetime.now()
+        start_time = time.time()
         
         # Menyimpan jarak Node dari startNode, dimulai dari endNode dengan jarak Infinity
         # dan node yang bertetangga dengan startNode
@@ -86,14 +86,13 @@ class Graph:
         shortestPath.reverse()
 
         # Akhiri record waktu
-        b = datetime.datetime.now()
-        delta = b - a
+        delta = time.time() - start_time
         # print(delta)
         result = {
             "distance": distances[endNode],
             "path": shortestPath,
             "iterasi": iterasi,
-            "waktu": delta.total_seconds() * 1000.00
+            "waktu": delta
         }
 
         return result

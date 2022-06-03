@@ -26,7 +26,7 @@ class PrettyWidget(QWidget):
 
         self.setGeometry(100, 100, 800, 600)
         self.center()
-        self.setWindowTitle('S Plot')
+        self.setWindowTitle('Task Dikjstra 13520156')
 
         grid = QGridLayout()
         self.setLayout(grid)
@@ -48,13 +48,13 @@ class PrettyWidget(QWidget):
 
         layout = QVBoxLayout()
 
-        self.fileNameLabel = QLabel('Choose file')
+        self.fileNameLabel = QLabel('Choose File')
         self.fileNameLabel.setObjectName('FileNameLabel')
         layout.addWidget(self.fileNameLabel)
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
 
-        self.browseButton = QPushButton('browse')
+        self.browseButton = QPushButton('Browse')
         self.browseButton.setObjectName('browse')
         layout.addWidget(self.browseButton)
         layout.setSpacing(10)
@@ -86,14 +86,15 @@ class PrettyWidget(QWidget):
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
 
-        startButton = QPushButton('start')
-        startButton.setObjectName('start')
-        layout.addWidget(startButton)
+        self.startButton = QPushButton('Start')
+        self.startButton.setObjectName('start')
+        layout.addWidget(self.startButton)
         layout.setSpacing(10)
         self.verticalGroupBox.setLayout(layout)
-        startButton.clicked.connect(self.startDikjstra)
+        self.startButton.setEnabled(False)
+        self.startButton.clicked.connect(self.startDikjstra)
 
-        clearButton = QPushButton('clear')
+        clearButton = QPushButton('Clear')
         clearButton.setObjectName('clear')
         layout.addWidget(clearButton)
         layout.setSpacing(10)
@@ -133,6 +134,7 @@ class PrettyWidget(QWidget):
         self.banyakIterasiLabel.setText("")
         self.lintasanLabel.setText("")
         self.figure.clf()
+        self.startButton.setEnabled(False)
         self.browseButton.setEnabled(True)
         
 
@@ -143,6 +145,7 @@ class PrettyWidget(QWidget):
         if os.path.exists(fname[0]):
             self.graph = Graph(fname[0])
             self.browseButton.setEnabled(False)
+            self.startButton.setEnabled(True)
             self.fig()
 
     def simpulAsalChanged(self):
@@ -226,8 +229,8 @@ class PrettyWidget(QWidget):
                 lintasan += " -> "
         self.lintasanLabel.setText('Lintasan: ' + lintasan)
         self.banyakIterasiLabel.setText('Banyak Iterasi: ' + str(result.get('iterasi')))
-        self.waktuLabel.setText("Waktu eksekusi: " + str(result.get('waktu')) + " ms")
-        self.panjangLintasanLabel.setText("Panjang lintasan: " + str(result.get('distance')))
+        self.waktuLabel.setText("Waktu Eksekusi: " + str(result.get('waktu')) + " ms")
+        self.panjangLintasanLabel.setText("Panjang Lintasan: " + str(result.get('distance')))
 
 
     def center(self):
